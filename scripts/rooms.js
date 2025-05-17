@@ -27,12 +27,17 @@ const roomsData = [
 ];
 
 const CleanRoomsTable = () => {
-  if (roomsData) {
-    roomsData.innerHTML = '';
+  if (roomsTableBody) {
+    roomsTableBody.innerHTML = '';
   }
 }
 
 const ListTheRoom = () => {
+  CleanRoomsTable();
+  postRequest('/room/delete', '')
+    .then(result => console.log(result))
+    .catch(err => console.warn('POST Error:', err));
+
   for (let i = 1; i <= roomsData.length; i++) {
     const row = `
       <tr>
@@ -45,7 +50,7 @@ const ListTheRoom = () => {
               data-bs-target="#editRoomModal" onclick='RoomsEditFormFill(${roomsData[i - 1].roomId}, "${roomsData[i - 1].available}", ${roomsData[i - 1].price}, "${roomsData[i - 1].type}")'>
               <i class="bi bi-pencil"></i> Edit
           </button>
-          <button class="btn btn-sm btn-danger">
+          <button onclick="DeleteTheRoom(${roomsData[i - 1].roomId})" class="btn btn-sm btn-danger">
               <i class="bi bi-trash"></i> Delete
           </button>
         </td>
@@ -63,18 +68,36 @@ const AddTheRoom = () => {
     type: document.getElementById("roomStatus").value,
   }
 
-  postRequest('/', data)
+  postRequest('/room/new', data)
     .then(result => console.log('Result:', result))
     .catch(err => console.warn('POST Error:', err));
 
+  ListTheRoom();
 }
 
 const EditTheRoom = () => {
+  const data = {
+    roomId: document.getElementById("editRoomNumber").value,
+    available: document.getElementById("editRoomType").value,
+    price: document.getElementById("editRoomPrice").value,
+    type: document.getElementById("editRoomStatus").value,
+  }
 
+  postRequest('/room/edit', data)
+    .then(result => console.log('Result:', result))
+    .catch(err => console.warn('POST Error:', err));
+
+  ListTheRoom();
 }
 
-const DeleteTheRoom = () => {
-
+const DeleteTheRoom = (id) => {
+  const data = {
+    roomId: id
+  }
+  postRequest('/room/delete', data)
+    .then(result => console.log('Result:', result))
+    .catch(err => console.warn('POST Error:', err));
+  ListTheRoom();
 }
 
 const RoomsEditFormFill = (roomNo, avilable, price, type) => {

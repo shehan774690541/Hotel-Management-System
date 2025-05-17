@@ -39,7 +39,7 @@ const CleanUsers = () => {
 
 const ListUsers = () => {
   CleanUsers();
-  postRequest('', null)
+  postRequest('/user/delete', '')
     .then(result => console.log(result))
     .catch(err => console.warn('POST Error:', err));
 
